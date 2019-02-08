@@ -10,7 +10,7 @@ import UIKit
 
 class ToGoViewController: UITableViewController  {
 
-    let itemArray = ["Milk", "kek", "Cheburek"]
+    var itemArray = ["Milk", "kek", "Cheburek"]
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -34,14 +34,31 @@ class ToGoViewController: UITableViewController  {
     
     //MARK - Delegate method
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.tableView.deselectRow(at: indexPathForSelectedRow, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
         if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
             tableView.cellForRow(at: indexPath)?.accessoryType = .none
         }else{
         tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
         print("\(itemArray[indexPath.row])")
+    }
+    //MARK - Add new items    
+    
+    @IBAction func addNewItemPressd(_ sender: UIBarButtonItem) {
+        var textField = UITextField()
+        let alert = UIAlertController(title: "Add New ToDO item", message: "", preferredStyle: .alert)
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+        }
+        let action = UIAlertAction(title: "Add item", style: .default) { (action) in
+            //what will hapen when used click
+            self.itemArray.append(textField.text!)
+            self.tableView.reloadData()
+            print(textField.text)
+        }
         
-        
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
     }
 }
