@@ -11,9 +11,14 @@ import UIKit
 class ToGoViewController: UITableViewController  {
 
     var itemArray = ["Milk", "kek", "Cheburek"]
+   
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        if let item = defaults.array(forKey: "ToDoList") as? [String]{
+            itemArray = item
+        }
     }
 
    //MARK- Tabletvie database Methods
@@ -54,8 +59,9 @@ class ToGoViewController: UITableViewController  {
         let action = UIAlertAction(title: "Add item", style: .default) { (action) in
             //what will hapen when used click
             self.itemArray.append(textField.text!)
-            self.tableView.reloadData()
-            print(textField.text)
+            
+            self.defaults.set(self.itemArray, forKey: "ToDoList")
+           self.tableView.reloadData()
         }
         
         alert.addAction(action)
