@@ -10,13 +10,13 @@ import UIKit
 
 class ToGoViewController: UITableViewController  {
 
-    var itemArray = ["Milk", "kek", "Cheburek"]
+    var itemArray = [Item]()
    
     let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let item = defaults.array(forKey: "ToDoList") as? [String]{
+        if let item = defaults.array(forKey: "ToDoList") as? [Item]{
             itemArray = item
         }
     }
@@ -30,9 +30,9 @@ class ToGoViewController: UITableViewController  {
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToGoCell", for: indexPath)
-        
-        cell.textLabel?.text = self.itemArray[indexPath.row]
-        
+        let item = self.itemArray[indexPath.row]
+        cell.textLabel?.text = item.title
+        cell.accessoryType = item.flag == false ? .none : .checkmark
         
         return cell
     }
@@ -40,28 +40,26 @@ class ToGoViewController: UITableViewController  {
     //MARK - Delegate method
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        }else{
-        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
-        print("\(itemArray[indexPath.row])")
+        itemArray[indexPath.row].flag = !itemArray[indexPath.row].flag
+        
+        
     }
     //MARK - Add new items    
     
     @IBAction func addNewItemPressd(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         let alert = UIAlertController(title: "Add New ToDO item", message: "", preferredStyle: .alert)
-        alert.addTextField { (alertTextField) in
+            alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create new item"
             textField = alertTextField
         }
         let action = UIAlertAction(title: "Add item", style: .default) { (action) in
             //what will hapen when used click
-            self.itemArray.append(textField.text!)
-            
+            let item = Item()
+            item.title = textField.text!
+            self.itemArray.append(item)
             self.defaults.set(self.itemArray, forKey: "ToDoList")
-           self.tableView.reloadData()
+            self.tableView.reloadData()
         }
         
         alert.addAction(action)
